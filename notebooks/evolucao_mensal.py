@@ -167,35 +167,7 @@ def plot_monthly_evolution(
     monthly: pd.DataFrame, output_dir: Path, show: bool
 ) -> None:
     """Cria o gráfico mensal."""
-    fig, axes = plt.subplots(3, 1, figsize=(14, 11), sharex=True)
-
-    axes[0].plot(
-        monthly["month"], monthly["orders"], marker="o", lw=2.2, color=BLUE
-    )
-    axes[0].set_title("Pedidos entregues por mes", loc="left", weight="bold")
-    axes[0].set_ylabel("Pedidos")
-
-    axes[1].plot(
-        monthly["month"],
-        monthly["revenue"] / 1_000_000,
-        marker="o",
-        lw=2.2,
-        color=GREEN,
-    )
-    axes[1].set_title("Receita mensal de produtos", loc="left", weight="bold")
-    axes[1].set_ylabel("R$ milhoes")
-
-    # Ignora 2016 por ter poucos pedidos.
-    ticket_plot = monthly["ticket"].where(
-        monthly["month"] >= pd.Timestamp("2017-01-01")
-    )
-    axes[2].plot(
-        monthly["month"], ticket_plot, marker="o", lw=2.2, color=ORANGE
-    )
-    axes[2].set_title("Ticket medio mensal", loc="left", weight="bold")
-    axes[2].set_ylabel("R$ por pedido")
-
-    for axis in axes:
+    def format_month_axis(axis):
         axis.axvspan(
             pd.Timestamp("2016-09-01"),
             pd.Timestamp("2016-12-31"),
@@ -208,19 +180,43 @@ def plot_monthly_evolution(
             alpha=0.10,
             color="black",
         )
+        axis.set_xlabel("Mes")
         axis.tick_params(axis="x", rotation=45)
 
-    fig.suptitle(
-        "Olist: evolucao mensal de volume, receita e ticket medio",
-        fontsize=16,
-        weight="bold",
+    fig, axis = plt.subplots(figsize=(14, 6))
+    axis.plot(
+        monthly["month"], monthly["orders"], marker="o", lw=2.2, color=BLUE
     )
-    finish_figure(
-        fig,
-        output_dir / "01_evolucao_mensal.png",
-        show,
-        tight_rect=(0, 0.03, 1, 0.97),
+    axis.set_title("Pedidos entregues por mes", loc="left", weight="bold")
+    axis.set_ylabel("Pedidos")
+    format_month_axis(axis)
+    finish_figure(fig, output_dir / "01a_pedidos_mensais.png", show)
+
+    fig, axis = plt.subplots(figsize=(14, 6))
+    axis.plot(
+        monthly["month"],
+        monthly["revenue"] / 1_000_000,
+        marker="o",
+        lw=2.2,
+        color=GREEN,
     )
+    axis.set_title("Receita mensal de produtos", loc="left", weight="bold")
+    axis.set_ylabel("R$ milhoes")
+    format_month_axis(axis)
+    finish_figure(fig, output_dir / "01b_receita_mensal.png", show)
+
+    # Ignora 2016 por ter poucos pedidos.
+    ticket_plot = monthly["ticket"].where(
+        monthly["month"] >= pd.Timestamp("2017-01-01")
+    )
+    fig, axis = plt.subplots(figsize=(14, 6))
+    axis.plot(
+        monthly["month"], ticket_plot, marker="o", lw=2.2, color=ORANGE
+    )
+    axis.set_title("Ticket medio mensal", loc="left", weight="bold")
+    axis.set_ylabel("R$ por pedido")
+    format_month_axis(axis)
+    finish_figure(fig, output_dir / "01c_ticket_medio_mensal.png", show)
 
 
 def plot_growth_index(
