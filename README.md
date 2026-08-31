@@ -6,9 +6,8 @@ O estudo utiliza o conjunto de dados público de e-commerce da Olist para analis
 
 ## Integrantes
 
-- Cibele Dinorah
-- Julio César Gonçalves Conceição
 - Isabela Pucci
+- Julio César Gonçalves Conceição
 - Priscila Tatianne Paulino
 - Yarla Freires
 
